@@ -1,3 +1,3 @@
-export type testId = {
+export type testID = {
   'data-testid'?: string;
 };
