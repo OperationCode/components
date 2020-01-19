@@ -1,8 +1,8 @@
 import React from 'react';
 import { testId } from '@types';
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: string | React.ReactElement;
+export interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement>, testId {
+  children: string | number | React.ReactElement;
   isDisabled?: boolean;
   // analyticsObject?: any;
   // isFullWidth?: boolean;
@@ -13,4 +13,4 @@ export const Button = ({
   // analyticsObject = {},
   // isFullWidth = false,
   ...props
-}: ButtonProps & testId) => <button disabled={isDisabled} {...props} />;
+}: Props) => <button disabled={isDisabled} {...props} />;
