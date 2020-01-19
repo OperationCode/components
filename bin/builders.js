@@ -16,6 +16,10 @@ export const ${componentName}: React.SFC<Props> = ({ ...props }: Props) => {
 };
 `,
 
+  buildSourceIndex: (componentName) =>
+    `export { ${componentName} } from './${componentName}';
+`,
+
   // Output generated for component's story file
   buildStory: (componentName) =>
     `import React from 'react';

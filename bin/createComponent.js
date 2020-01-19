@@ -1,6 +1,8 @@
 const path = require('path');
 const fs = require('fs');
-const { buildStory, buildTest, buildSource } = require('./builders');
+const os = require('os');
+// const { buildStory, buildTest, buildSource, buildSourceIndex } = require('./builders');
+const { buildTest, buildSource, buildSourceIndex } = require('./builders');
 
 const replacementString = 'Component';
 const componentPath = 'src/components/';
@@ -27,6 +29,9 @@ const componentStruct = {
           {
             'Component.tsx': buildSource,
           },
+          {
+            'index.ts': buildSourceIndex,
+          },
         ],
       },
     },
@@ -51,12 +56,16 @@ const findRoot = () => {
   return thisPath;
 };
 
+const doesPathExist = (directoryName) => fs.existsSync(directoryName);
+
 const doesComponentExist = (componentName, root) => {
   const newPath = path.join(root, componentPath, componentName);
-  if (fs.existsSync(newPath)) {
+
+  if (doesPathExist(newPath)) {
     console.error(`Component "${componentName}" Already Exists`); // eslint-disable-line no-console
     return true;
   }
+
   return false;
 };
 
@@ -80,21 +89,13 @@ const mkdirSyncRecursive = (directory) => {
   });
 };
 
-// Only call recursive create if the folder doesn't yet exist
-const doesDirectoryExist = (directoryName) => {
-  if (fs.existsSync(directoryName)) {
-    return true;
-  }
-
-  return false;
-};
-
 const writeFileData = (fileData, fileName) => {
   console.log(`Creating file: ${fileName}`); // eslint-disable-line no-console
 
   const directoryName = path.dirname(fileName);
 
-  if (!doesDirectoryExist(directoryName)) {
+  // Only call recursive create if the folder doesn't yet exist
+  if (!doesPathExist(directoryName)) {
     mkdirSyncRecursive(directoryName);
   }
 
@@ -153,6 +154,26 @@ const recurseStructure = (subObject, currentPath, componentName) => {
   /* eslint-enable no-unused-vars */
 };
 
+const addComponentToMapper = (componentName, root) => {
+  fs.open(`${root}/src/index.ts`, 'a', 666, (error, fileID) => {
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    const newLineOfCode = `export { ${componentName} } from './components/${componentName}';${os.EOL}`;
+
+    fs.write(fileID, newLineOfCode, (error, written, string) => {
+      if (error) {
+        console.error(
+          `Error when attempting to write new line to component mapper for ${componentName}\n`,
+          error,
+        );
+      }
+    });
+  });
+};
+
 // Function runner
 (() => {
   if (process.argv.length < 3) {
@@ -168,12 +189,15 @@ const recurseStructure = (subObject, currentPath, componentName) => {
   const mainTree = componentStruct.root;
   const root = findRoot();
 
-  process.argv
-    .slice(2)
+  // array -> set -> array casting to make sure component names cant be duped
+  const componentNames = Array.from(new Set(process.argv.slice(2)));
+
+  componentNames
     .filter((componentName) => {
       return doesComponentExist(componentName, root) === false;
     })
-    .map((componentName) => {
-      return recurseStructure(mainTree, root, componentName);
+    .forEach((componentName) => {
+      addComponentToMapper(componentName, root);
+      recurseStructure(mainTree, root, componentName);
     });
 })();
