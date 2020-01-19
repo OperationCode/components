@@ -61,19 +61,19 @@ const doesPathExist = (directoryName) => fs.existsSync(directoryName);
 const doesComponentExist = (componentName, root) => {
   const newPath = path.join(root, componentPath, componentName);
 
-  if (doesPathExist(newPath)) {
+  const wasComponentFound = doesPathExist(newPath);
+
+  if (wasComponentFound) {
     console.error(`Component "${componentName}" Already Exists`); // eslint-disable-line no-console
-    return true;
   }
 
-  return false;
+  return wasComponentFound;
 };
 
 /*
  *  Split path into segments, and incrementally mkdir until we have built the full path
  *     -> this could be done with `mkdir -p` if we had some other cross platform node package.
  */
-
 const mkdirSyncRecursive = (directory) => {
   // adjust windows path delim to match bash.
   const newPath = directory.replace(/\\{1,2}/g, '/').split('/');
@@ -114,7 +114,6 @@ const conditionallyAdjustPath = (key, currentPath, componentName) => {
 
   const adjustedPath = path.join(currentPath, pathBase);
 
-  // Adjusted path
   return adjustedPath;
 };
 
@@ -122,8 +121,6 @@ const conditionallyAdjustPath = (key, currentPath, componentName) => {
 const recurseStructure = (subObject, currentPath, componentName) => {
   let newPath;
 
-  /* eslint-disable no-restricted-syntax */
-  /* eslint-disable no-unused-vars */
   for (const key in subObject) {
     if (subObject[key]) {
       newPath = conditionallyAdjustPath(key, currentPath, componentName);
@@ -138,11 +135,10 @@ const recurseStructure = (subObject, currentPath, componentName) => {
 
       // Recurse over arrays or objects within file/folder structure
       if (Array.isArray(subObject[key])) {
-        /* eslint-disable no-loop-func */
+        // eslint-disable-next-line no-loop-func
         subObject[key].forEach((arrayItem) => {
           recurseStructure(arrayItem, newPath, componentName);
         });
-        /* eslint-enable no-loop-func */
 
         return;
       }
@@ -150,8 +146,6 @@ const recurseStructure = (subObject, currentPath, componentName) => {
       recurseStructure(subObject[key], newPath, componentName);
     }
   }
-  /* eslint-enable no-restricted-syntax */
-  /* eslint-enable no-unused-vars */
 };
 
 const addComponentToMapper = (componentName, root) => {
@@ -177,7 +171,6 @@ const addComponentToMapper = (componentName, root) => {
 // Function runner
 (() => {
   if (process.argv.length < 3) {
-    // eslint-disable-next-line no-console
     console.error(
       'Error: You must provide at least one component name to script.',
       'Example: "yarn create-component componentName"',
