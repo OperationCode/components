@@ -5,9 +5,6 @@ import { Button, Props } from '../Button';
 export default {
   title: 'Button',
   component: Button,
-  parameters: {
-    info: { inline: true },
-  },
   excludeStories: ['requiredProps'],
 };
 

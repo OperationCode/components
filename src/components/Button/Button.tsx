@@ -1,16 +1,11 @@
-import React from 'react';
+import React, { ButtonHTMLAttributes, FC, ReactChild } from 'react';
 import { testID } from '@types';
 
-export interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement>, testID {
-  children: string | number | React.ReactElement;
+export interface Props extends ButtonHTMLAttributes<HTMLButtonElement>, testID {
+  children: ReactChild;
   isDisabled?: boolean;
-  // analyticsObject?: any;
-  // isFullWidth?: boolean;
 }
 
-export const Button: React.FC<Props> = ({
-  isDisabled = false,
-  // analyticsObject = {},
-  // isFullWidth = false,
-  ...props
-}: Props) => <button disabled={isDisabled} {...props} />;
+export const Button: FC<Props> = ({ isDisabled = false, ...props }: Props) => (
+  <button disabled={isDisabled} {...props} />
+);
