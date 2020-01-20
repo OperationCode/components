@@ -8,7 +8,7 @@ export interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement>, te
   // isFullWidth?: boolean;
 }
 
-export const Button: React.FunctionComponent<Props> = ({
+export const Button: React.FC<Props> = ({
   isDisabled = false,
   // analyticsObject = {},
   // isFullWidth = false,
