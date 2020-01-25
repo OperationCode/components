@@ -1,11 +1,9 @@
 {
   "*.{ts,tsx,js,jsx}": [
     "prettier --write",
-    "eslint --fix",
-    "git add"
+    "eslint --fix"
   ],
   "*.{md,html,xml,svg,json,graphql}": [
-    "prettier --write",
-    "git add"
+    "prettier --write"
   ]
 }
